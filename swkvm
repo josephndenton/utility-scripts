@@ -1,0 +1,43 @@
+#! /bin/bash
+
+# A script to change the display input with software via ddcutil.
+#
+# To get configuration options run 'ddcutil detect' to determine which displays are numbered what.
+# To determine which hex value maps to which input source run 'ddcutil vcpinfo --display=<num> --verbose 60'.
+#
+# Usage: swkvm <number>
+#  Configuration file should live at ~/.config/swkvm/<number> in the following format:
+#    <display num>:<hex for display input>
+#    <display num>:<hex for display input>
+#
+#  Example configuration:
+#    1:0x11
+#    2:0x0f
+#    3:0x0f
+
+# RegExp to enforce a number is provided as the input argument.
+re='^[0-9]+$'
+if ! [[ $1 =~ $re ]] ; then
+   echo "Requires a number." >&2; exit 1
+fi
+
+# Read config file for input number
+readarray -t arr < ~/.config/swkvm/$1
+
+# Iterates through config file and sets displays to configured inputs
+for i in "${arr[@]}"
+do
+  display=$(echo $i | cut -d':' -f1)
+  input=$(echo $i | cut -d':' -f2)
+  input_pretty=$(ddcutil vcpinfo --verbose --display=$display 60 | grep $input | awk '{print $2}')
+
+  echo "setting display $display to $input_pretty"
+
+  ddcutil setvcp --noverify --display=$display 60 $input 2>/dev/null &
+  
+  # Sometimes ddsutil would fail for a monitor if triggered in rapid succession
+  sleep 0.3
+done
+
+wait
+echo "displays set"

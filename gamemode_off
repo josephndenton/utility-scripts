@@ -1,0 +1,8 @@
+#! /bin/bash
+
+# Enables XFCE compositor
+xfconf-query -c xfwm4 -p /general/use_compositing -s true
+
+# Reapplies display configuration to re-enable monitors and proper render positions.
+xfconf-query --create --type string -c displays -p /Schemes/Apply -s b0b0c88e3065c2488298eb3788336b39294ac09d
+

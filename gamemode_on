@@ -1,0 +1,9 @@
+#! /bin/bash
+
+# Disables XFCE compositor to improve framerate
+xfconf-query -c xfwm4 -p /general/use_compositing -s false
+
+# Turns off the output from the left and right monitor in order to ensure Nvidia GSync can run.
+# Run 'xrandr' to see which monitors are connected and which portion of the screen they render.
+xrandr --output HDMI-0 --off
+xrandr --output DP-0 --off
