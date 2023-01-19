@@ -1,0 +1,17 @@
+#! /bin/bash
+
+# Enables XFCE compositor
+xfconf-query -c xfwm4 -p /general/use_compositing -s true
+
+# Reapplies saved display configuration profile to re-enable monitors and proper render positions.
+xfconf-query --create --type string -c displays -p /Schemes/Apply -s b0b0c88e3065c2488298eb3788336b39294ac09d
+
+# Sets eth NIC to 1000Mb/s full duplex
+sudo ethtool -s enp4s0 speed 1000 duplex full autoneg on
+
+# Toggle GSync on
+nvidia-settings -a AllowVRR=1
+nvidia-settings -a ShowVRRVisualIndicator=1
+
+# Flip the bit for caps
+sudo setcap -r $(readlink -f $(which sunshine))
